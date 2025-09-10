@@ -1,0 +1,23 @@
+<!-- 贪吃蛇页面布局：顶部HUD + 画布 + 控制区（模式/速度/音效） -->
+<view class="container" catchtouchmove="noop" bindtouchstart="onTouchStart" bindtouchend="onTouchEnd">
+	<!-- 分数/关卡/最高分显示 -->
+	<view class="hud">
+		<text>Score: {{score}}</text>
+		<text>Level: {{level}}</text>
+		<text>Best: {{best}}</text>
+	</view>
+	<!-- 模式与障碍信息显示 -->
+	<view class="hud">
+		<text>Mode: {{wrapMode ? '穿墙' : '撞墙'}}</text>
+		<text>Obstacles: {{obstacles.length}}</text>
+	</view>
+	<!-- 游戏画布：Canvas 2D 渲染蛇/食物/障碍 -->
+	<canvas type="2d" id="game" class="game-canvas" disable-scroll="true"></canvas>
+	<!-- 基础控制：切换穿墙、开始/暂停/重开 -->
+	<view class="controls">
+		<button size="mini" bindtap="toggleWrap">切换穿墙</button>
+		<button size="mini" bindtap="onStart">开始</button>
+		<button size="mini" bindtap="onPause">暂停</button>
+		<button size="mini" bindtap="onRestart">重开</button>
+	</view>
+</view>

@@ -1,0 +1,29 @@
+/* 页面容器：纵向居中布局 */
+.container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 8rpx;
+}
+/* 顶部信息条：左右分布 */
+.hud {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 8rpx;
+	font-size: 28rpx;
+}
+/* 画布尺寸与边框（黑白风格） */
+.game-canvas {
+	width: 700rpx;
+	height: 700rpx;
+	background: #fff;
+	border: 2rpx solid #000;
+}
+/* 控制按钮行 */
+.controls {
+	display: flex;
+	gap: 8rpx;
+	margin-top: 8rpx;
+}
+/* 移除速度选择相关样式 */

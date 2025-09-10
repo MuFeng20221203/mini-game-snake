@@ -1,0 +1,45 @@
+<!-- 首页：头像昵称获取 + 进入游戏入口 -->
+<scroll-view class="scrollarea" scroll-y type="list">
+  <view class="container">
+    <!-- 用户信息区域：支持 chooseAvatar 或 getUserProfile，两套兜底逻辑 -->
+    <view class="userinfo">
+      <block wx:if="{{canIUseNicknameComp && !hasUserInfo}}">
+        <!-- 开发版：直接显示默认头像，不提供选择功能 -->
+        <view class="avatar-wrapper">
+          <image class="avatar" src="{{userInfo.avatarUrl}}"></image>
+          <text class="dev-tip">开发版使用默认头像</text>
+        </view>
+        <!-- 输入昵称：实时响应与回车确认均触发 onInputChange -->
+        <view class="nickname-wrapper">
+          <text class="nickname-label">昵称</text>
+          <input type="nickname" class="nickname-input" placeholder="请输入昵称" bindinput="onInputChange" bindconfirm="onInputChange" confirm-type="done" />
+        </view>
+      </block>
+      <block wx:elif="{{!hasUserInfo}}">
+        <!-- 开发版：直接显示默认信息 -->
+        <view class="avatar-wrapper">
+          <image class="avatar" src="{{userInfo.avatarUrl}}"></image>
+          <text class="dev-tip">开发版使用默认头像</text>
+        </view>
+        <view class="nickname-wrapper">
+          <text class="nickname-label">昵称</text>
+          <input type="nickname" class="nickname-input" placeholder="请输入昵称" bindinput="onInputChange" bindconfirm="onInputChange" confirm-type="done" />
+        </view>
+      </block>
+      <block wx:else>
+        <!-- 已有信息展示 -->
+        <image bindtap="bindViewTap" class="userinfo-avatar" src="{{userInfo.avatarUrl}}" mode="cover"></image>
+        <text class="userinfo-nickname">{{userInfo.nickName}}</text>
+      </block>
+    </view>
+    <!-- Slogan/占位文案 -->
+    <view class="usermotto">
+      <text class="user-motto">{{motto}}</text>
+    </view>
+    <!-- 进入贪吃蛇游戏入口按钮 -->
+    <view style="margin-top: 24rpx;">
+      <button type="primary" bindtap="onGoSnake">玩贪吃蛇</button>
+    </view>
+  </view>
+  <!-- 开发版：移除授权弹窗 -->
+</scroll-view>
