@@ -677,7 +677,7 @@ Page({
 		}
 	},
 
-	// touch controls: swipe to change direction (整个屏幕)
+	// 容器触摸事件 - 恢复触屏控制（游戏画布区域）
 	onTouchStart(e) {
 		this.touchStart = e.changedTouches[0];
 	},
@@ -709,6 +709,42 @@ Page({
 			}
 		}
 		this.touchStart = null;
+	},
+
+	// 方向控制区域的触摸处理
+	onDirectionTouchStart(e) {
+		this.directionTouchStart = e.changedTouches[0];
+	},
+	
+	onDirectionTouchEnd(e) {
+		const start = this.directionTouchStart;
+		if (!start) return;
+		const end = e.changedTouches[0];
+		const dx = end.pageX - start.pageX;
+		const dy = end.pageY - start.pageY;
+		
+		// 增加最小滑动距离，避免误触
+		const minDistance = 20;
+		if (Math.abs(dx) < minDistance && Math.abs(dy) < minDistance) {
+			this.directionTouchStart = null;
+			return;
+		}
+		
+		// 判断滑动方向
+		if (Math.abs(dx) > Math.abs(dy)) {
+			if (dx > 0) {
+				this.pendingDir = 'right';
+			} else {
+				this.pendingDir = 'left';
+			}
+		} else {
+			if (dy > 0) {
+				this.pendingDir = 'down';
+			} else {
+				this.pendingDir = 'up';
+			}
+		}
+		this.directionTouchStart = null;
 	},
 
 	onTapDir(e) {

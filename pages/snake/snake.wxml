@@ -20,4 +20,10 @@
 		<button size="mini" bindtap="onPause">暂停</button>
 		<button size="mini" bindtap="onRestart">重开</button>
 	</view>
+	<!-- 方向控制区域 - 触屏滑动控制 -->
+	<view class="direction-control-area" 
+		  catchtouchstart="onDirectionTouchStart" 
+		  catchtouchend="onDirectionTouchEnd"
+		  catchtouchmove="noop">
+	</view>
 </view>

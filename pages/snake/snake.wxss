@@ -26,4 +26,14 @@
 	gap: 8rpx;
 	margin-top: 8rpx;
 }
+
+/* 方向控制区域 - 触屏滑动控制 */
+.direction-control-area {
+	width: 100%;
+	height: calc(100vh - 200rpx); /* 从当前位置延伸到屏幕底部 */
+	margin-top: 20rpx;
+	background: transparent; /* 完全透明 */
+	position: relative;
+}
+
 /* 移除速度选择相关样式 */
