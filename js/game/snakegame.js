@@ -21,22 +21,34 @@ class SnakeGame {
     this.speed = 200; // 毫秒
   }
 
-  init() {
-    console.log('SnakeGame initializing...');
-    this.canvas.init();
-    console.log('Canvas initialized');
-    
-    this.snake.init(this.canvas.gridWidth, this.canvas.gridHeight);
-    console.log('Snake initialized');
-    
-    this.food.generate(this.snake.getBody(), this.canvas.gridWidth, this.canvas.gridHeight);
-    console.log('Food generated');
-    
-    this.render();
-    console.log('Initial render completed');
-    
-    this.bindEvents();
-    console.log('Events bound');
+  async init() {
+    try {
+      console.log('SnakeGame initializing...');
+      
+      // 等待 Canvas 异步初始化完成
+      await this.canvas.init();
+      console.log('Canvas initialized');
+      
+      this.snake.init(this.canvas.gridWidth, this.canvas.gridHeight);
+      console.log('Snake initialized');
+      
+      this.food.generate(this.snake.getBody(), this.canvas.gridWidth, this.canvas.gridHeight);
+      console.log('Food generated');
+      
+      // 延迟渲染，确保 Canvas 完全准备就绪
+      setTimeout(() => {
+        this.render();
+        console.log('Initial render completed');
+      }, 50);
+      
+      this.bindEvents();
+      console.log('Events bound');
+      
+      console.log('SnakeGame initialization completed successfully');
+    } catch (error) {
+      console.error('SnakeGame init error:', error);
+      throw error; // 重新抛出错误，让上层处理
+    }
   }
 
   bindEvents() {
@@ -177,13 +189,14 @@ class SnakeGame {
     if (this.gameState === 'stopped' || this.gameState === 'paused') {
       // 如果游戏完全停止（游戏结束后），需要重新初始化游戏数据
       if (this.gameState === 'stopped') {
-        this.resetGameData();
+        this.reset();
       }
       
       this.gameState = 'playing';
       // 清除可能存在的旧定时器
       if (this.gameLoop) {
         clearInterval(this.gameLoop);
+        this.gameLoop = null;
       }
       this.gameLoop = setInterval(() => {
         this.update();
@@ -222,7 +235,8 @@ class SnakeGame {
   restartGame() {
     this.gameState = 'stopped';
     clearInterval(this.gameLoop);
-    this.resetGameData();
+    this.gameLoop = null;
+    this.reset();
   }
 
   update() {
@@ -382,6 +396,7 @@ class SnakeGame {
   gameOver() {
     this.gameState = 'stopped';
     clearInterval(this.gameLoop);
+    this.gameLoop = null;
     
     if (this.score > this.bestScore) {
       this.bestScore = this.score;
@@ -398,8 +413,45 @@ class SnakeGame {
     this.render();
   }
 
+  reset() {
+    console.log('Resetting game...');
+    
+    // 停止游戏循环
+    if (this.gameLoop) {
+      clearInterval(this.gameLoop);
+      this.gameLoop = null;
+    }
+    
+    // 重置游戏状态
+    this.gameState = 'stopped';
+    this.score = 0;
+    this.level = 1;
+    this.speed = 200;
+    
+    // 重新初始化蛇和食物
+    try {
+      this.snake.init(this.canvas.gridWidth, this.canvas.gridHeight);
+      this.food.generate(this.snake.getBody(), this.canvas.gridWidth, this.canvas.gridHeight);
+      
+      // 清理 Canvas 并重新绘制
+      this.clearCanvas();
+      this.render();
+      
+      console.log('Game reset completed');
+    } catch (error) {
+      console.error('Game reset error:', error);
+    }
+  }
+
+  clearCanvas() {
+    if (this.canvas && this.canvas.ctx) {
+      this.canvas.ctx.fillStyle = '#FFFFFF';
+      this.canvas.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+  }
+
   render() {
-    console.log('Starting render...');
+    console.log('Starting render... Game state:', this.gameState);
     this.canvas.clear();
     console.log('Canvas cleared');
     

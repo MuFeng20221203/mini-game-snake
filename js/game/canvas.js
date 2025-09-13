@@ -11,42 +11,57 @@ class Canvas {
   }
 
   init() {
-    try {
-      this.canvas = wx.createCanvas();
-      this.ctx = this.canvas.getContext('2d');
-      
-      // 获取系统信息
-      const systemInfo = wx.getSystemInfoSync();
-      this.width = systemInfo.windowWidth;
-      this.height = systemInfo.windowHeight;
-      
-      console.log('System info:', systemInfo);
-      console.log('Canvas created:', this.canvas);
-      console.log('Context created:', this.ctx);
-      
-      // 计算游戏区域大小 - 考虑左右间隙和上下空间
-      const availableWidth = this.width - 2 * this.gridSize; // 左右各留一格间隙
-      const availableHeight = this.height - 200; // 留出顶部和底部空间
-      const gameAreaSize = Math.min(availableWidth, availableHeight);
-      this.gridWidth = Math.floor(gameAreaSize / this.gridSize);
-      this.gridHeight = Math.floor(gameAreaSize / this.gridSize);
-      
-      console.log('Grid dimensions:', this.gridWidth, this.gridHeight);
-      
-      // 设置画布大小
-      this.canvas.width = this.width;
-      this.canvas.height = this.height;
-      
-      console.log('Canvas size set:', this.canvas.width, this.canvas.height);
-      
-      // 立即绘制白色背景测试
-      this.ctx.fillStyle = '#FFFFFF';
-      this.ctx.fillRect(0, 0, this.width, this.height);
-      console.log('White background drawn');
-      
-    } catch (error) {
-      console.error('Canvas initialization error:', error);
-    }
+    return new Promise((resolve, reject) => {
+      try {
+        console.log('Canvas initializing...');
+        
+        // 使用 setTimeout 确保在下一个事件循环中初始化
+        setTimeout(() => {
+          try {
+            this.canvas = wx.createCanvas();
+            this.ctx = this.canvas.getContext('2d');
+            
+            // 获取系统信息
+            const systemInfo = wx.getSystemInfoSync();
+            this.width = systemInfo.windowWidth;
+            this.height = systemInfo.windowHeight;
+            
+            console.log('System info:', systemInfo);
+            console.log('Canvas created:', this.canvas);
+            console.log('Context created:', this.ctx);
+            
+            // 计算游戏区域大小 - 考虑左右间隙和上下空间
+            const availableWidth = this.width - 2 * this.gridSize; // 左右各留一格间隙
+            const availableHeight = this.height - 200; // 留出顶部和底部空间
+            const gameAreaSize = Math.min(availableWidth, availableHeight);
+            this.gridWidth = Math.floor(gameAreaSize / this.gridSize);
+            this.gridHeight = Math.floor(gameAreaSize / this.gridSize);
+            
+            console.log('Grid dimensions:', this.gridWidth, this.gridHeight);
+            
+            // 设置画布大小
+            this.canvas.width = this.width;
+            this.canvas.height = this.height;
+            
+            console.log('Canvas size set:', this.canvas.width, this.canvas.height);
+            
+            // 立即绘制白色背景，确保可见
+            this.ctx.fillStyle = '#FFFFFF';
+            this.ctx.fillRect(0, 0, this.width, this.height);
+            console.log('White background drawn');
+            
+            resolve();
+          } catch (error) {
+            console.error('Canvas initialization error:', error);
+            reject(error);
+          }
+        }, 100); // 延迟100ms确保系统准备就绪
+        
+      } catch (error) {
+        console.error('Canvas initialization error:', error);
+        reject(error);
+      }
+    });
   }
 
   getContext() {
