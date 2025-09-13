@@ -115,7 +115,26 @@ class Snake {
     const dx = tail.x - secondLast.x;
     const dy = tail.y - secondLast.y;
     
-    // 根据相对位置确定蛇尾方向
+    // 在穿墙模式下，检查是否跨越了边界
+    // 如果距离过大，说明跨越了边界，需要特殊处理
+    const maxDistance = 2; // 最大正常距离
+    
+    if (Math.abs(dx) > maxDistance || Math.abs(dy) > maxDistance) {
+      // 在穿墙模式下，蛇尾方向应该与蛇头移动方向相反
+      // 蛇头朝右移动 → 蛇尾朝左（半圆在左侧）
+      // 蛇头朝左移动 → 蛇尾朝右（半圆在右侧）
+      // 蛇头朝上移动 → 蛇尾朝下（半圆在下侧）
+      // 蛇头朝下移动 → 蛇尾朝上（半圆在上侧）
+      switch (this.direction) {
+        case 'right': return 'left';   // 蛇头朝右 → 蛇尾朝左
+        case 'left': return 'right';   // 蛇头朝左 → 蛇尾朝右
+        case 'up': return 'down';      // 蛇头朝上 → 蛇尾朝下
+        case 'down': return 'up';      // 蛇头朝下 → 蛇尾朝上
+        default: return 'left';
+      }
+    }
+    
+    // 正常情况下，根据相对位置确定蛇尾方向
     if (dx > 0) return 'right';    // 尾巴在右边 → 蛇尾朝右
     if (dx < 0) return 'left';     // 尾巴在左边 → 蛇尾朝左
     if (dy > 0) return 'down';     // 尾巴在下边 → 蛇尾朝下
