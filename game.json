@@ -8,5 +8,13 @@
     "downloadFile": 10000
   },
   "subpackages": [],
-  "navigateToMiniProgramAppIdList": []
+  "navigateToMiniProgramAppIdList": [],
+  "permission": {
+    "scope.userLocation": {
+      "desc": "你的位置信息将用于小程序位置接口的效果展示"
+    }
+  },
+  "requiredBackgroundModes": [],
+  "plugins": {},
+  "resizable": true
 }

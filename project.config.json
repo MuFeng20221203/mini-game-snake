@@ -1,7 +1,7 @@
 {
   "compileType": "game",
   "projectname": "miniprogram-1",
-  "libVersion": "3.10.0",
+  "libVersion": "2.19.4",
   "packOptions": {
     "ignore": [],
     "include": []
@@ -11,8 +11,8 @@
     "coverView": true,
     "es6": true,
     "postcss": true,
-    "minified": true,
-    "enhance": true,
+    "minified": false,
+    "enhance": false,
     "showShadowRootInWxmlPanel": true,
     "packNpmRelationList": [],
     "babelSetting": {
@@ -22,16 +22,18 @@
     },
     "compileWorklet": false,
     "uglifyFileName": false,
-    "uploadWithSourceMap": true,
+    "uploadWithSourceMap": false,
     "packNpmManually": false,
     "minifyWXSS": false,
-    "minifyWXML": true,
+    "minifyWXML": false,
     "localPlugins": false,
     "condition": false,
     "swc": false,
     "disableSWC": true,
     "disableUseStrict": false,
-    "useCompilerPlugins": false
+    "useCompilerPlugins": false,
+    "urlCheck": false,
+    "es6Module": false
   },
   "condition": {},
   "editorSetting": {

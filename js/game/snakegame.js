@@ -9,7 +9,7 @@ class SnakeGame {
     this.snake = new Snake();
     this.food = new Food();
     
-    this.gameState = 'stopped'; // stopped, playing, paused
+    this.gameState = 'init'; // stopped, playing, paused
     this.score = 0;
     this.level = 1;
     this.bestScore = parseInt(wx.getStorageSync('bestScore') || '0');
@@ -186,10 +186,10 @@ class SnakeGame {
   }
 
   startGame() {
-    if (this.gameState === 'stopped' || this.gameState === 'paused') {
+    if (this.gameState === 'stopped' || this.gameState === 'paused' || this.gameState === 'init') {
       // 如果游戏完全停止（游戏结束后），需要重新初始化游戏数据
       if (this.gameState === 'stopped') {
-        this.reset();
+        this.resetGameData();
       }
       
       this.gameState = 'playing';
@@ -233,10 +233,10 @@ class SnakeGame {
   }
 
   restartGame() {
-    this.gameState = 'stopped';
+    this.gameState = 'init';
     clearInterval(this.gameLoop);
     this.gameLoop = null;
-    this.reset();
+    this.resetGameData();
   }
 
   update() {
