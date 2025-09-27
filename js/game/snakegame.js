@@ -14,7 +14,6 @@ class SnakeGame {
     this.level = 1;
     this.bestScore = parseInt(wx.getStorageSync('bestScore') || '0');
     this.mode = 'wall'; // wall, through
-    this.obstacles = 0;
     
     this.gameLoop = null;
     this.lastTime = 0;
@@ -482,19 +481,15 @@ class SnakeGame {
     
     // 绘制顶部信息 - 按照图片样式布局
     ctx.fillStyle = '#000000';
-    ctx.font = '16px Arial'; // 正常字体，不加粗
+    ctx.font = '16px sans-serif'; // 系统默认字体，兼容性更好
     
     // 左边：Mode 和 Score
     ctx.fillText(`Mode: ${this.mode === 'wall' ? '撞墙' : '穿墙'}`, gameAreaX, gameAreaY - 35);
     ctx.fillText(`Score: ${this.score}`, gameAreaX, gameAreaY - 10);
     
-    // 中间：Level
-    const centerX = gameAreaX + (this.canvas.width - 2 * this.canvas.gridSize) / 2 - 25; // 居中位置
-    ctx.fillText(`Level: ${this.level}`, centerX, gameAreaY - 10);
-    
-    // 右边：Obstacles 和 Best
+    // 右边：Level 和 Best
     const rightColumnX = gameAreaX + this.canvas.width - 2 * this.canvas.gridSize - 100; // 从右边开始
-    ctx.fillText(`Obstacles: ${this.obstacles}`, rightColumnX, gameAreaY - 35);
+    ctx.fillText(`Level: ${this.level}`, rightColumnX, gameAreaY - 35);
     ctx.fillText(`Best: ${this.bestScore}`, rightColumnX, gameAreaY - 10);
     
     // 绘制游戏控制按钮
@@ -513,8 +508,11 @@ class SnakeGame {
     const buttonY = gameAreaBottom + 10; // 贴着游戏框底部
     const buttonWidth = 60;
     const buttonHeight = 30;
-    const buttonSpacing = (gameAreaSize - 4 * buttonWidth) / 3; // 按钮间距基于游戏区域宽度
-    const startX = gameAreaX; // 从游戏框左边开始
+    const buttonSpacing = 15; // 增加按钮间距
+    
+    // 计算按钮总宽度并居中
+    const totalButtonWidth = 4 * buttonWidth + 3 * buttonSpacing;
+    const startX = gameAreaX + (gameAreaSize - totalButtonWidth) / 2; // 居中计算
 
     // 按钮文本
     const buttonTexts = ['切换穿墙', '开始', '暂停', '重开'];
@@ -522,13 +520,13 @@ class SnakeGame {
     buttonTexts.forEach((text, index) => {
       const buttonX = startX + index * (buttonWidth + buttonSpacing);
       
-      // 绘制按钮背景 - 灰色背景，无边框
-      ctx.fillStyle = '#CCCCCC'; // 灰色背景
+      // 绘制按钮背景 - 淡灰色背景，无边框
+      ctx.fillStyle = '#E8E8E8'; // 淡灰色背景
       ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
       
       // 绘制按钮文字
       ctx.fillStyle = '#000000';
-      ctx.font = '12px Arial';
+      ctx.font = '14px sans-serif';
       ctx.textAlign = 'center';
       ctx.fillText(text, buttonX + buttonWidth/2, buttonY + buttonHeight/2 + 4);
     });

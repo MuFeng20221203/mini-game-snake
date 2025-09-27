@@ -5,6 +5,7 @@ class Canvas {
     this.ctx = null;
     this.width = 0;
     this.height = 0;
+    this.pixelRatio = 1; // 设备像素比
     this.gridSize = 20; // 每个格子的像素大小
     this.gridWidth = 0;
     this.gridHeight = 0;
@@ -25,8 +26,10 @@ class Canvas {
             const systemInfo = wx.getSystemInfoSync();
             this.width = systemInfo.windowWidth;
             this.height = systemInfo.windowHeight;
+            this.pixelRatio = systemInfo.pixelRatio || 1;
             
             console.log('System info:', systemInfo);
+            console.log('Pixel ratio:', this.pixelRatio);
             console.log('Canvas created:', this.canvas);
             console.log('Context created:', this.ctx);
             
@@ -39,11 +42,15 @@ class Canvas {
             
             console.log('Grid dimensions:', this.gridWidth, this.gridHeight);
             
-            // 设置画布大小
-            this.canvas.width = this.width;
-            this.canvas.height = this.height;
+            // 设置画布实际尺寸（考虑像素比）
+            this.canvas.width = this.width * this.pixelRatio;
+            this.canvas.height = this.height * this.pixelRatio;
+            
+            // 缩放上下文以匹配像素比
+            this.ctx.scale(this.pixelRatio, this.pixelRatio);
             
             console.log('Canvas size set:', this.canvas.width, this.canvas.height);
+            console.log('Context scaled by pixel ratio:', this.pixelRatio);
             
             // 立即绘制白色背景，确保可见
             this.ctx.fillStyle = '#FFFFFF';
