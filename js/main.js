@@ -1,11 +1,13 @@
 // main.js - 贪吃蛇游戏主文件
 const SnakeGame = require('./game/snakegame');
+const FriendRank = require('./game/friendRank');
 
 class Main {
   constructor() {
     try {
       console.log('Main class constructor starting...');
-      this.game = new SnakeGame();
+      this.friendRank = new FriendRank();
+      this.game = new SnakeGame(this.friendRank);
       // 使用 setTimeout 确保在下一个事件循环中初始化
       setTimeout(() => {
         this.init().catch(error => {
@@ -23,6 +25,21 @@ class Main {
   async init() {
     try {
       console.log('Main class initializing...');
+      
+      // 初始化用户信息
+      try {
+        await this.friendRank.initUserInfo();
+        
+        // 获取好友排行榜
+        await this.friendRank.getFriendRank();
+        
+        // 更新全局实例
+        if (typeof global !== 'undefined') {
+          global.friendRankInstance = this.friendRank;
+        }
+      } catch (error) {
+        console.error('初始化好友系统失败:', error);
+      }
       
       // 初始化游戏（现在是异步的）
       await this.game.init();
@@ -53,8 +70,14 @@ class Main {
     
     // 监听页面显示事件
     if (typeof wx !== 'undefined' && wx.onShow) {
-      wx.onShow(() => {
+      wx.onShow((options) => {
         console.log('Page onShow - ensuring game is visible');
+        
+        // 处理分享场景（可以在这里添加群聊分享逻辑）
+        if (options && options.shareTicket) {
+          console.log('收到 shareTicket:', options.shareTicket);
+        }
+        
         // 确保游戏可见
         setTimeout(() => {
           if (this.game && this.game.canvas) {

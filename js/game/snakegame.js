@@ -4,7 +4,7 @@ const Snake = require('./snakeclass');
 const Food = require('./food');
 
 class SnakeGame {
-  constructor() {
+  constructor(friendRank = null) {
     this.canvas = new Canvas();
     this.snake = new Snake();
     this.food = new Food();
@@ -18,6 +18,8 @@ class SnakeGame {
     this.gameLoop = null;
     this.lastTime = 0;
     this.speed = 200; // 毫秒
+    
+    this.friendRank = friendRank; // 好友排行榜管理器
   }
 
   async init() {
@@ -132,10 +134,14 @@ class SnakeGame {
     const buttonY = gameAreaBottom + 10; // 贴着游戏框底部
     const buttonWidth = 60;
     const buttonHeight = 30;
-    const buttonSpacing = (gameAreaSize - 4 * buttonWidth) / 3; // 按钮间距基于游戏区域宽度
-    const startX = gameAreaX; // 从游戏框左边开始
+    const buttonSpacing = 15; // 增加按钮间距
     
-    const buttonTexts = ['切换穿墙', '开始', '暂停', '重开'];
+    // 计算按钮总宽度并居中 - 现在有5个按钮
+    const totalButtonWidth = 5 * buttonWidth + 4 * buttonSpacing;
+    const startX = gameAreaX + (gameAreaSize - totalButtonWidth) / 2; // 居中计算
+
+    // 按钮文本
+    const buttonTexts = ['切换穿墙', '开始', '暂停', '重开', '好友榜'];
     
     console.log('Button detection:', {
       touchX, touchY,
@@ -176,6 +182,9 @@ class SnakeGame {
             break;
           case '重开':
             this.restartGame();
+            break;
+          case '好友榜':
+            this.showFriendRankModal();
             break;
         }
         return true;
@@ -238,6 +247,42 @@ class SnakeGame {
     this.resetGameData();
   }
 
+  showFriendRankModal() {
+    if (!this.friendRank) {
+      wx.showToast({
+        title: '好友排行榜功能未启用',
+        icon: 'none',
+        duration: 2000
+      });
+      return;
+    }
+
+    const friendList = this.friendRank.getFriendList();
+    
+    if (friendList.length === 0) {
+      wx.showModal({
+        title: '好友排行榜',
+        content: '暂无好友数据，快来邀请好友一起玩吧！',
+        showCancel: false
+      });
+      return;
+    }
+    
+    // 格式化排行榜数据
+    let rankText = '🏆 好友排行榜 🏆\n\n';
+    friendList.forEach((item, index) => {
+      const rank = index + 1;
+      const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `${rank}.`;
+      rankText += `${medal} ${item.nickName}: ${item.score}分\n`;
+    });
+    
+    wx.showModal({
+      title: '好友排行榜',
+      content: rankText,
+      showCancel: false
+    });
+  }
+
   update() {
     if (this.gameState !== 'playing') return;
 
@@ -253,10 +298,33 @@ class SnakeGame {
       this.food.generate(this.snake.getBody(), this.canvas.gridWidth, this.canvas.gridHeight);
       this.score += 10;
       
-      // 升级
-      if (this.score > 0 && this.score % 100 === 0) {
+      // 升级和提速
+      const oldLevel = this.level;
+      
+      // 达到 50 分时升级
+      if (this.score >= 50 && this.level === 1) {
+        this.level = 2;
+      }
+      // 达到 100 分时升级
+      else if (this.score >= 100 && this.level === 2) {
+        this.level = 3;
+      }
+      // 之后每 100 分升级一次
+      else if (this.score > 100 && this.score % 100 === 0) {
         this.level++;
+      }
+      
+      // 如果等级提升了，就提速
+      if (this.level > oldLevel) {
         this.speed = Math.max(100, this.speed - 20);
+        console.log(`等级提升到 Level ${this.level}，速度提升到 ${this.speed}ms`);
+        
+        // 显示升级提示
+        // wx.showToast({
+        //   title: `Level ${this.level}!`,
+        //   icon: 'none',
+        //   duration: 1000
+        // });
       }
     }
 
@@ -400,6 +468,11 @@ class SnakeGame {
     if (this.score > this.bestScore) {
       this.bestScore = this.score;
       wx.setStorageSync('bestScore', this.bestScore);
+      
+      // 保存到云端
+      if (this.friendRank) {
+        this.friendRank.saveUserScore(this.bestScore);
+      }
     }
     
     // 显示游戏结束提示
@@ -510,12 +583,12 @@ class SnakeGame {
     const buttonHeight = 30;
     const buttonSpacing = 15; // 增加按钮间距
     
-    // 计算按钮总宽度并居中
-    const totalButtonWidth = 4 * buttonWidth + 3 * buttonSpacing;
+    // 计算按钮总宽度并居中 - 现在有5个按钮
+    const totalButtonWidth = 5 * buttonWidth + 4 * buttonSpacing;
     const startX = gameAreaX + (gameAreaSize - totalButtonWidth) / 2; // 居中计算
 
     // 按钮文本
-    const buttonTexts = ['切换穿墙', '开始', '暂停', '重开'];
+    const buttonTexts = ['切换穿墙', '开始', '暂停', '重开', '好友榜'];
     
     buttonTexts.forEach((text, index) => {
       const buttonX = startX + index * (buttonWidth + buttonSpacing);
